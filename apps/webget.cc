@@ -9,8 +9,28 @@ using namespace std;
 
 void get_URL( const string& host, const string& path )
 {
-  cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
+
+  Address DestAdress( host, "http" );
+  TCPSocket clientSocket;
+  clientSocket.connect( DestAdress );
+  /**
+   * 使用socket与http服务器沟通的语法是这样的：
+   * GET /hello HTTP/1.1        //注意这里换行符号为\r\n
+   * Host: cs144.keithw.org
+   * Connection:  close
+   * 注意最后要发送一个\r\n
+   */
+
+  const string sendData = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+  // cout<<sendData;
+  clientSocket.write( sendData );
+  string buffer = "";
+  while ( !clientSocket.eof() ) {
+    clientSocket.read( buffer );
+    cout << buffer;
+  }
+
+  clientSocket.close();
 }
 
 int main( int argc, char* argv[] )
